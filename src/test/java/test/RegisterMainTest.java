@@ -7,9 +7,11 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 
+import javax.swing.plaf.nimbus.State;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import static mock.DBUtilities.*;
 import static org.junit.Assert.*;
@@ -23,7 +25,9 @@ public class RegisterMainTest {
         Connection conn = null;
         try {
             conn = DriverManager.getConnection(dbms_url, dbms_id, dbms_pw);
-            conn.createStatement().execute("delete from user where id = \"1999bin\" ");
+            Statement statement =  conn.createStatement();
+            statement.execute("delete from user where id = \"1999bin\" ");
+            statement.close();
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }

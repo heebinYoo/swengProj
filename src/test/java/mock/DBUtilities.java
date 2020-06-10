@@ -4,6 +4,7 @@ import bean.Token;
 import bean.UserVo;
 
 import java.sql.*;
+import java.util.ArrayList;
 
 public class DBUtilities {
     final static public String dbms_addr = "192.168.0.13/sweng";
@@ -12,7 +13,12 @@ public class DBUtilities {
     final static public String dbms_pw = "rootroot";
 
 
-
+    /**
+     * it access with root of mysql
+     * @param id
+     * @return
+     * @throws SQLException
+     */
     public static boolean isNotDuplicated(String id) throws SQLException {
         final String duplicateCheckQuery = "select 1 from user where id=?";
 
@@ -33,6 +39,12 @@ public class DBUtilities {
         return true;
     }
 
+    /**
+     * it access with root of mysql
+     * @param userVo
+     * @return
+     * @throws SQLException
+     */
     public static boolean register(UserVo userVo) throws SQLException {
         final String query = "insert into user(id,pw,name,phone,email) values(?,?,?,?,?)";
 
@@ -56,7 +68,13 @@ public class DBUtilities {
         }
     }
 
-
+    /**
+     * it access with root of mysql
+     * @param id
+     * @param pw
+     * @return
+     * @throws SQLException
+     */
     public static Token login(String id, String pw) throws SQLException {
         UserVo userVo = new UserVo();
 
@@ -80,22 +98,96 @@ public class DBUtilities {
         prepStmt.close();
         conn.close();
 
-
         if(userVo.manage){
+            conn = DriverManager.getConnection(dbms_url, "admin", "nayana");
             return new Token(userVo, conn, Token.manager);
         }
         else if(userVo.active==false){
             return new Token(null, null, Token.deactivated);
         }
         else{
+            conn = DriverManager.getConnection(dbms_url, "normal", "normal");
             return new Token(userVo, conn, Token.ok);
         }
 
+    }
 
+    /**
+     *
+     * @param conn : should pass admin connection obj
+     * @return : ArrayList of users
+     * @throws SQLException
+     */
+    public static ArrayList<UserVo> getUsers(Connection conn) throws SQLException {
 
+        ArrayList<UserVo> userVos = new ArrayList<>();
+        final String query = "select * from user where manage=0";
 
+        Statement statement = conn.createStatement();
+        ResultSet rset = statement.executeQuery(query);
 
+        UserVo userVo;
+        while (rset.next()) {
+            userVo = new UserVo();
+            userVo.id=rset.getString(1);
+            userVo.pw=rset.getString(2);
+            userVo.name = rset.getString(3);
+            userVo.phone = rset.getString(4);
+            userVo.email = rset.getString(5);
+            userVo.active = rset.getInt(6) == 1 ? true : false;
+            userVo.manage = rset.getInt(7) ==1 ? true : false;
+            userVos.add(userVo);
+        }
 
+        statement.close();
+        conn.close();
+
+        return userVos;
+    }
+
+    private static boolean isDeletableUser(UserVo userVo, Connection conn) throws SQLException {
+        final String duplicateCheckQuery = "select active from user where id=?";
+
+        PreparedStatement prepStmt = conn.prepareStatement(duplicateCheckQuery);
+        prepStmt.setString(1, userVo.id);
+
+        ResultSet rset = prepStmt.executeQuery();
+        int result = -1;
+        while (rset.next()) {
+            result = rset.getInt(1);
+        }
+        prepStmt.close();
+
+        if(result==0){
+            return true;
+        }
+        else{
+            return false;
+        }
+
+    }
+    public static boolean deleteUser(UserVo userVo, Connection conn) throws SQLException {
+
+        final String deleteQuery = "delete from user where id=?";
+
+        try {
+        conn.setAutoCommit(false);
+
+        if(!isDeletableUser(userVo, conn))
+            return false;
+
+        PreparedStatement prepStmt = conn.prepareStatement(deleteQuery);
+        prepStmt.setString(1, userVo.id);
+        prepStmt.executeUpdate();
+
+        } catch (SQLException throwables) {
+            throw throwables;
+        }
+        finally {
+            conn.setAutoCommit(true);
+        }
+
+        return true;
     }
 
 
