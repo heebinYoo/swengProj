@@ -11,7 +11,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import static mock.Utilities.*;
+import static mock.DBUtilities.*;
 import static org.junit.Assert.*;
 
 
@@ -23,7 +23,7 @@ public class RegisterMainTest {
         Connection conn = null;
         try {
             conn = DriverManager.getConnection(dbms_url, dbms_id, dbms_pw);
-            conn.createStatement().execute("delete from user where ID = \"1999bin\" ");
+            conn.createStatement().execute("delete from user where id = \"1999bin\" ");
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }

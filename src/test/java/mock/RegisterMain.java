@@ -33,7 +33,7 @@ public class RegisterMain {
 
 
         try {
-            Utilities.register(userVo);
+            DBUtilities.register(userVo);
         } catch (SQLException throwables) {
 
             return throwables.getMessage();
@@ -44,8 +44,8 @@ public class RegisterMain {
 
     }
 
-    private boolean isNotDuplicated(String ID) throws SQLException {
-        return Utilities.isNotDuplicated(ID);
+    private boolean isNotDuplicated(String id) throws SQLException {
+        return DBUtilities.isNotDuplicated(id);
     }
 
     private boolean isNotEmpty(UserVo userVo){
