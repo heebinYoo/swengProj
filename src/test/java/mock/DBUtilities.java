@@ -1,5 +1,6 @@
 package mock;
 
+import bean.BookVo;
 import bean.Token;
 import bean.UserVo;
 
@@ -189,6 +190,132 @@ public class DBUtilities {
 
         return true;
     }
+
+    public static ArrayList<BookVo> searchByUid(String key, Connection conn) throws SQLException {
+
+        ArrayList<BookVo> bookVos = new ArrayList<>();
+        final String query = "select * from book where uid=?";
+
+        PreparedStatement prepStmt = conn.prepareStatement(query);
+        prepStmt.setString(1, key);
+        ResultSet rset = prepStmt.executeQuery();
+
+        BookVo bookVo;
+        while (rset.next()) {
+            bookVo = new BookVo();
+            bookVo.idx = rset.getInt(1);
+            bookVo.uid = rset.getString(2);
+            bookVo.title = rset.getString(3);
+            bookVo.publisher = rset.getString(4);
+            bookVo.writer = rset.getString(5);
+            bookVo.year = rset.getInt(6);
+            bookVo.price = rset.getInt(7);
+            bookVo.condition = rset.getInt(8);
+            bookVo.ISBN = rset.getString(9);
+            bookVos.add(bookVo);
+        }
+
+        prepStmt.close();
+
+
+        return bookVos;
+
+    }
+
+    public static ArrayList<BookVo> searchByWriter(String key, Connection conn) throws SQLException {
+
+
+        ArrayList<BookVo> bookVos = new ArrayList<>();
+        final String query = "select * from book where writter=?";
+
+        PreparedStatement prepStmt = conn.prepareStatement(query);
+        prepStmt.setString(1, key);
+        ResultSet rset = prepStmt.executeQuery();
+
+        BookVo bookVo;
+        while (rset.next()) {
+            bookVo = new BookVo();
+            bookVo.idx = rset.getInt(1);
+            bookVo.uid = rset.getString(2);
+            bookVo.title = rset.getString(3);
+            bookVo.publisher = rset.getString(4);
+            bookVo.writer = rset.getString(5);
+            bookVo.year = rset.getInt(6);
+            bookVo.price = rset.getInt(7);
+            bookVo.condition = rset.getInt(8);
+            bookVo.ISBN = rset.getString(9);
+            bookVos.add(bookVo);
+        }
+
+        prepStmt.close();
+
+
+        return bookVos;
+    }
+
+    public static ArrayList<BookVo> searchByISBN(String key, Connection conn) throws SQLException  {
+
+
+        ArrayList<BookVo> bookVos = new ArrayList<>();
+        final String query = "select * from book where ISBN=?";
+
+        PreparedStatement prepStmt = conn.prepareStatement(query);
+        prepStmt.setString(1, key);
+        ResultSet rset = prepStmt.executeQuery();
+
+        BookVo bookVo;
+        while (rset.next()) {
+            bookVo = new BookVo();
+            bookVo.idx = rset.getInt(1);
+            bookVo.uid = rset.getString(2);
+            bookVo.title = rset.getString(3);
+            bookVo.publisher = rset.getString(4);
+            bookVo.writer = rset.getString(5);
+            bookVo.year = rset.getInt(6);
+            bookVo.price = rset.getInt(7);
+            bookVo.condition = rset.getInt(8);
+            bookVo.ISBN = rset.getString(9);
+            bookVos.add(bookVo);
+        }
+
+        prepStmt.close();
+
+
+        return bookVos;
+    }
+
+    public static ArrayList<BookVo> searchByTitle(String key, Connection conn) throws SQLException  {
+
+
+        ArrayList<BookVo> bookVos = new ArrayList<>();
+        final String query = "select * from book where title=?";
+
+        PreparedStatement prepStmt = conn.prepareStatement(query);
+        prepStmt.setString(1, key);
+        ResultSet rset = prepStmt.executeQuery();
+
+        BookVo bookVo;
+        while (rset.next()) {
+            bookVo = new BookVo();
+            bookVo.idx = rset.getInt(1);
+            bookVo.uid = rset.getString(2);
+            bookVo.title = rset.getString(3);
+            bookVo.publisher = rset.getString(4);
+            bookVo.writer = rset.getString(5);
+            bookVo.year = rset.getInt(6);
+            bookVo.price = rset.getInt(7);
+            bookVo.condition = rset.getInt(8);
+            bookVo.ISBN = rset.getString(9);
+            bookVos.add(bookVo);
+        }
+
+        prepStmt.close();
+
+
+        return bookVos;
+    }
+
+
 
 
 }

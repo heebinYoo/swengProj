@@ -13,6 +13,8 @@ public class GetUsersMainTest {
     public void getUsers() {
         Token token = new LoginMain().login("admin", "nayana");
         GetUsersMain getUsersMain = new GetUsersMain();
-        getUsersMain.getUsers(token);
+        assertEquals(GetUsersMain.ok, getUsersMain.getUsers(token));
+
+
     }
 }
