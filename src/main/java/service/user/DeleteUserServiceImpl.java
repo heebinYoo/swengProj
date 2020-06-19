@@ -1,20 +1,27 @@
 package service.user;
 
-import database.dao.UserDAO;
+
+import application.serviceInterface.user.DeleteUserService;
 import database.vo.UserVo;
+import service.UserDAO;
 import service.response.Status;
 import service.response.Token;
 
 import java.sql.SQLException;
 
-public class DeleteService {
-    public static final String ok = "ok";
-    public static final String notFound = "can't found user";
-    public static final String accessDenied = "be manager";
-    public static Status delete(UserVo userVo, Token token){
+public class DeleteUserServiceImpl implements DeleteUserService {
+
+    private UserDAO userDAO;
+    public DeleteUserServiceImpl(UserDAO userDAO){
+        this.userDAO=userDAO;
+    }
+
+
+
+    public Status delete(UserVo userVo, Token token){
         if(token.getStatus().equals(Token.manager)) {
             try {
-                if (UserDAO.delete(userVo, token.getConn())) {
+                if (userDAO.delete(userVo, token.getConn())) {
                     return new Status(ok);
                 } else {
                     return new Status(notFound);

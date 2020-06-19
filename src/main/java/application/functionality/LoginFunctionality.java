@@ -1,16 +1,21 @@
 package application.functionality;
 
-import application.Functionality;
-import application.StateGraph;
 import application.TokenHolder;
+import application.functionality.core.Functionality;
+import application.serviceInterface.user.LoginService;
 import service.response.Status;
 import service.response.Token;
-import service.user.LoginService;
 
 public class LoginFunctionality extends Functionality {
     public static final String ok = "ok";
     public static final String retry = "please retry";
     public static final String deactivated = "it's de activated";
+
+    private LoginService loginService;
+
+    public LoginFunctionality(LoginService loginService) {
+        this.loginService = loginService;
+    }
 
     @Override
     protected void setUpStateGraph() {
@@ -22,7 +27,7 @@ public class LoginFunctionality extends Functionality {
         final int stage = 0;
         super.stateChange(stage);
 
-        Token result = LoginService.login(id, pw, token);
+        Token result = loginService.login(id, pw, token);
         switch (result.getStatus()) {
             case Token.ok:
             case Token.manager:

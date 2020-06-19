@@ -1,40 +1,44 @@
 package application.functionality;
 
-import application.Functionality;
-import application.StateGraph;
+import application.functionality.core.Functionality;
+import application.serviceInterface.user.RegisterUserService;
 import database.vo.UserVo;
 import service.response.Status;
-import service.response.Token;
-import service.user.RegisterService;
 
 public class RegisterFunctionality extends Functionality {
 
-    public static final String reqnotempty =RegisterService.reqnotempty;
-    public static final String isDuplicated = RegisterService.isDuplicated;
-    public static final String isNotVaildEmail = RegisterService.isNotVaildEmail;
+    public static final String reqnotempty = RegisterUserService.reqnotempty;
+    public static final String isDuplicated = RegisterUserService.isDuplicated;
+    public static final String isNotVaildEmail = RegisterUserService.isNotVaildEmail;
     public static final String ok = "ok";
     public static final String retry = "please retry";
+
+    private RegisterUserService registerUserService;
+
+    public RegisterFunctionality(RegisterUserService registerUserService) {
+        this.registerUserService = registerUserService;
+    }
 
 
     @Override
     protected void setUpStateGraph() {
-        super.super.stateGraphBuilder(1);
+        super.stateGraphBuilder(1);
     }
 
 
     public Status register(UserVo userVo){
         final int stage = 0;
 
-super.stateChange(stage);
+        super.stateChange(stage);
 
-        switch (RegisterService.register(userVo, token).getStatus()){
-            case RegisterService.reqnotempty:
+        switch (registerUserService.register(userVo, token).getStatus()){
+            case RegisterUserService.reqnotempty:
                 return new Status(reqnotempty);
-            case RegisterService.isDuplicated:
+            case RegisterUserService.isDuplicated:
                 return new Status(isDuplicated);
-            case RegisterService.isNotVaildEmail:
+            case RegisterUserService.isNotVaildEmail:
                 return new Status(isNotVaildEmail);
-            case RegisterService.ok:
+            case RegisterUserService.ok:
                 return new Status(ok);
             default:
                 return new Status(retry);

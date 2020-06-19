@@ -1,20 +1,29 @@
 package service.user;
 
-import database.dao.UserDAO;
+
+import application.serviceInterface.user.ActivationService;
 import database.vo.UserVo;
+import service.UserDAO;
 import service.response.Status;
 import service.response.Token;
 
 import java.sql.SQLException;
 
-public class ActivationService {
-    public static final String ok = "ok";
-    public static final String notFound = "can't found user";
-    public static final String accessDenied = "be manager";
-    public static Status deactivate(UserVo userVo, Token token){
+public class ActivationServiceImpl implements ActivationService {
+
+
+
+    private UserDAO userDAO;
+    public ActivationServiceImpl(UserDAO userDAO){
+        this.userDAO=userDAO;
+    }
+
+
+
+    public Status deactivate(UserVo userVo, Token token){
         if(token.getStatus().equals(Token.manager)) {
             try {
-                if (UserDAO.deactivate(userVo, token.getConn())) {
+                if (userDAO.deactivate(userVo, token.getConn())) {
                     return new Status(ok);
                 } else {
                     return new Status(notFound);
@@ -28,10 +37,10 @@ public class ActivationService {
         }
     }
 
-    public static Status activate(UserVo userVo, Token token){
+    public Status activate(UserVo userVo, Token token){
         if(token.getStatus().equals(Token.manager)) {
             try {
-                if(UserDAO.activate(userVo, token.getConn())){
+                if(userDAO.activate(userVo, token.getConn())){
                     return new Status(ok);
                 }
                 else{

@@ -1,22 +1,31 @@
 package service.user;
 
+import application.serviceInterface.user.LoginService;
+import service.UserDAO;
 import service.response.Token;
-import database.dao.UserDAO;
+
 import database.vo.UserVo;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-public class LoginService {
+public class LoginServiceImpl implements LoginService {
 
-    public static Token login(String id, String pw, Token token){
+    private UserDAO userDAO;
+    public LoginServiceImpl(UserDAO userDAO){
+        this.userDAO=userDAO;
+    }
+
+
+
+    public Token login(String id, String pw, Token token){
         String dbms_addr = "192.168.0.13/sweng";
         String dbms_url = "jdbc:mysql://"+dbms_addr+"?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC";
 
         UserVo userVo;
         try {
-            userVo = UserDAO.login(id, pw, token.getConn());
+            userVo = userDAO.login(id, pw, token.getConn());
         } catch (SQLException throwables) {
             return new Token(null, null, throwables.toString());
         }

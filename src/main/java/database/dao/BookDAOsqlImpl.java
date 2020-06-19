@@ -1,6 +1,7 @@
 package database.dao;
 
 import database.vo.BookVo;
+import service.BookDAO;
 
 
 import java.sql.Connection;
@@ -9,15 +10,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public class BookDAO{
-    public static final String title = "title";
-    public static final String ISBN = "ISBN";
-    public static final String writer = "writer";
-    public static final String pYear = "pYear";
-    public static final String uid = "uid";
+import static application.serviceInterface.BookSearchMethod.*;
 
 
-    public static ArrayList<BookVo> search(String key, String method, Connection conn) throws SQLException {
+//TODO refactor
+public class BookDAOsqlImpl implements BookDAO {
+
+
+
+    public  ArrayList<BookVo> search(String key, String method, Connection conn) throws SQLException {
         ArrayList<BookVo> bookVos = new ArrayList<>();
         String query;
         switch (method){
@@ -65,7 +66,7 @@ public class BookDAO{
         return bookVos;
     }
 
-    public static boolean insert(BookVo bookVo, Connection conn) throws SQLException {
+    public  boolean insert(BookVo bookVo, Connection conn) throws SQLException {
 
         final String query = "insert into `book`(`uid`,`title`,`publisher`,`writter`,`pyear`,`price`,`condition`,`ISBN`) values(?,?,?,?,?,?,?,?);";
 
@@ -92,7 +93,7 @@ public class BookDAO{
                 return false;
         }
     }
-    public static boolean delete(BookVo bookVo, Connection conn) throws SQLException {
+    public  boolean delete(BookVo bookVo, Connection conn) throws SQLException {
         final String query = "delete from book where idx=?";
 
         PreparedStatement prepStmt = conn.prepareStatement(query);
@@ -111,7 +112,7 @@ public class BookDAO{
         }
 
     }
-    public static boolean update(BookVo bookVo, Connection conn) throws SQLException {
+    public  boolean update(BookVo bookVo, Connection conn) throws SQLException {
         final String query = "update book set title=?, publisher=?, writter=?, pyear=?, price=?, `condition`=?, ISBN=? where idx=?";
 
         PreparedStatement prepStmt = conn.prepareStatement(query);

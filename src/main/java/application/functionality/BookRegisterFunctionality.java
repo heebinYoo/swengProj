@@ -1,16 +1,20 @@
 package application.functionality;
 
-import application.Functionality;
-import application.StateGraph;
+import application.functionality.core.Functionality;
+import application.serviceInterface.book.RegisterBookService;
 import database.vo.BookVo;
-import service.book.RegisterService;
 import service.response.Status;
-import service.response.Token;
 
 public class BookRegisterFunctionality extends Functionality {
 
     public static final String ok = "ok";
     public static final String retry = "please retry";
+
+    private RegisterBookService registerBookService;
+
+    public BookRegisterFunctionality(RegisterBookService registerBookService){
+        this.registerBookService = registerBookService;
+    }
 
     @Override
     protected void setUpStateGraph() {
@@ -21,14 +25,14 @@ public class BookRegisterFunctionality extends Functionality {
         final int stage = 0;
 
 super.stateChange(stage);
-        Status status = RegisterService.register(bookVo, token);
+        Status status = registerBookService.register(bookVo, token);
 
         switch (status.getStatus()){
-            case RegisterService.accessDenied:
+            case RegisterBookService.accessDenied:
                 throw new IllegalAccessError();
-            case RegisterService.ok:
+            case RegisterBookService.ok:
                 return new Status(ok);
-            case RegisterService.unknown:
+            case RegisterBookService.unknown:
             default:
                 return new Status(retry);
         }

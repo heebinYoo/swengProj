@@ -1,23 +1,31 @@
 package application.functionality;
 
-import application.Functionality;
-import application.StateGraph;
+import application.functionality.core.Functionality;
 import application.model.ListModel;
+import application.serviceInterface.BookSearchMethod;
+import application.serviceInterface.book.DeleteBookService;
+import application.serviceInterface.book.SearchService;
+import application.serviceInterface.book.UpdateService;
 import database.vo.BookVo;
-import service.book.DeleteService;
-import service.book.SearchService;
-import service.book.UpdateService;
 import service.response.Status;
 import service.response.StatusedArrayList;
-import service.response.Token;
 
 public class MyBookFunctionality extends Functionality {
 
     public static final String ok = "ok";
     public static final String retry = "please retry";
 
-    ListModel<BookVo> model;
-    MyBookFunctionality(){
+    private ListModel<BookVo> model;
+
+    private SearchService searchService;
+    private DeleteBookService deleteBookService;
+    private UpdateService updateService;
+
+    public MyBookFunctionality(SearchService searchService, DeleteBookService deleteBookService, UpdateService updateService){
+        this.searchService = searchService;
+        this.deleteBookService = deleteBookService;
+        this.updateService = updateService;
+
         model = new ListModel<>();
         model.replaceData(null);
     }
@@ -38,9 +46,9 @@ public class MyBookFunctionality extends Functionality {
     public ListModel<BookVo> getMyBook(){
         final int stage = 0;
 
-super.stateChange(stage);
+        super.stateChange(stage);
 
-        StatusedArrayList<BookVo> result = SearchService.search(token.getData().getId(), SearchService.uid, token);
+        StatusedArrayList<BookVo> result = searchService.search(token.getData().getId(), BookSearchMethod.uid, token);
 
         switch (result.getStatus()){
             case SearchService.accessDenied:
@@ -58,7 +66,7 @@ super.stateChange(stage);
 
 super.stateChange(stage);
 
-        Status status = UpdateService.update(bookVo, token);
+        Status status = updateService.update(bookVo, token);
         switch (status.getStatus()){
             case UpdateService.accessDenied:
                 throw new IllegalAccessError("MyBookFunctionality : access denied doing UpdateService.update");
@@ -76,13 +84,13 @@ super.stateChange(stage);
 
 super.stateChange(stage);
 
-        Status status = DeleteService.delete(bookVo, token);
+        Status status = deleteBookService.delete(bookVo, token);
         switch (status.getStatus()){
-            case DeleteService.accessDenied:
+            case DeleteBookService.accessDenied:
                 throw new IllegalAccessError("MyBookFunctionality : access denied doing DeleteService.delete");
-            case DeleteService.ok:
+            case DeleteBookService.ok:
                 return new Status(this.ok);
-            case DeleteService.unknown:
+            case DeleteBookService.unknown:
             default:
                 return new Status(this.retry);
         }

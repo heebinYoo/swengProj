@@ -1,17 +1,17 @@
 package application.functionality;
 
-import application.Functionality;
-import application.StateGraph;
+import application.functionality.core.Functionality;
 import application.model.ListModel;
-import database.dao.BookDAO;
+import application.serviceInterface.book.SearchService;
+import application.serviceInterface.trade.BuildTradeService;
+import application.serviceInterface.trade.MailService;
 import database.vo.BookVo;
-import service.book.SearchService;
+import service.book.SearchServiceImpl;
 import service.response.Status;
 import service.response.StatusedArrayList;
-import service.response.Token;
 import service.response.Trade;
-import service.trade.BuildTradeService;
-import service.trade.MailService;
+import service.trade.BuildTradeServiceImpl;
+import service.trade.MailServiceImpl;
 
 public class BookBuyFunctionality extends Functionality {
     ListModel<BookVo> model;
@@ -19,15 +19,16 @@ public class BookBuyFunctionality extends Functionality {
     public static final String ok = "ok";
     public static final String retry = "please retry";
 
-    public static final String title = SearchService.title;
-    public static final String ISBN = SearchService.ISBN;
-    public static final String writer = SearchService.writer;
-    public static final String pYear = SearchService.pYear;
-    public static final String uid = SearchService.uid;
+    private BuildTradeService buildTradeService;
+    private MailService mailService;
+    private SearchService searchService;
 
+    public BookBuyFunctionality(BuildTradeService buildTradeService, MailService mailService, SearchService searchService){
 
+        this.buildTradeService = buildTradeService;
+        this.mailService = mailService;
+        this.searchService = searchService;
 
-    BookBuyFunctionality(){
         model = new ListModel<>();
         model.replaceData(null);
     }
@@ -45,7 +46,7 @@ public class BookBuyFunctionality extends Functionality {
 
         super.stateChange(stage);
 
-        StatusedArrayList<BookVo> result = SearchService.search(key, method, token);
+        StatusedArrayList<BookVo> result = searchService.search(key, method, token);
 
         switch (result.getStatus()){
             case SearchService.accessDenied:
@@ -63,7 +64,7 @@ public class BookBuyFunctionality extends Functionality {
         super.stateChange(stage);
 
 
-        Trade result = BuildTradeService.buildTrade(bookVo, token.getData(), token);
+        Trade result = buildTradeService.buildTrade(bookVo, token.getData(), token);
         switch (result.getStatus()){
             case SearchService.accessDenied:
                 throw new IllegalAccessError();
@@ -79,7 +80,7 @@ public class BookBuyFunctionality extends Functionality {
         final int stage = 2;
 
         super.stateChange(stage);
-        Status status = MailService.send(trade, token);
+        Status status = mailService.send(trade, token);
 
         //TODO : maybe after this project
 

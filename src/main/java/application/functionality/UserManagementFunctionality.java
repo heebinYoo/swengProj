@@ -1,28 +1,37 @@
 package application.functionality;
 
-import application.Functionality;
-import application.StateGraph;
+import application.functionality.core.Functionality;
 import application.model.ListModel;
-import database.vo.BookVo;
+import application.serviceInterface.user.ActivationService;
+import application.serviceInterface.user.DeleteUserService;
+import application.serviceInterface.user.GetListService;
 import database.vo.UserVo;
-import service.book.SearchService;
 import service.response.Status;
 import service.response.StatusedArrayList;
-import service.response.Token;
-import service.user.ActivationService;
-import service.user.DeleteService;
-import service.user.GetListService;
+import service.user.ActivationServiceImpl;
+import service.user.DeleteUserServiceImpl;
+import service.user.GetListServiceImpl;
 
 public class UserManagementFunctionality extends Functionality {
     public static final String ok = "ok";
     public static final String notFound = "can't found user";
     public static final String retry = "please retry";
     public static final String accessDenied = "be manager";
-    ListModel<UserVo> model;
+    private ListModel<UserVo> model;
 
-    public UserManagementFunctionality() {
+    private GetListService getListService;
+    private DeleteUserService deleteUserService;
+    private ActivationService activationService;
+
+
+    public UserManagementFunctionality(GetListService getListService, DeleteUserService deleteUserService, ActivationService activationService) {
+        this.getListService = getListService;
+        this.deleteUserService = deleteUserService;
+        this.activationService = activationService;
+
         model = new ListModel<>();
         model.replaceData(null);
+
     }
 
     @Override
@@ -49,14 +58,14 @@ public class UserManagementFunctionality extends Functionality {
     public ListModel<UserVo> getUserList(){
         final int stage = 0;
 
-super.stateChange(stage);
+        super.stateChange(stage);
 
-        StatusedArrayList<UserVo> result = GetListService.getList(token);
+        StatusedArrayList<UserVo> result = getListService.getList(token);
 
         switch (result.getStatus()){
-            case GetListService.accessDenied:
+            case GetListServiceImpl.accessDenied:
                 throw new IllegalAccessError("UserManagementFunctionality : access denied doing GetListService.getList");
-            case GetListService.ok:
+            case GetListServiceImpl.ok:
                 model.replaceData(result.getData());
         }
 
@@ -66,15 +75,15 @@ super.stateChange(stage);
     public Status delete(UserVo userVo){
         final int stage = 1;
 
-super.stateChange(stage);
-        Status status = DeleteService.delete(userVo, token);
+        super.stateChange(stage);
+        Status status = deleteUserService.delete(userVo, token);
 
         switch (status.getStatus()){
-            case DeleteService.accessDenied:
+            case DeleteUserServiceImpl.accessDenied:
                 throw new IllegalAccessError("UserManagementFunctionality : access denied doing DeleteService.delete");
-            case DeleteService.notFound:
+            case DeleteUserServiceImpl.notFound:
                 return new Status(this.notFound);
-            case DeleteService.ok:
+            case DeleteUserServiceImpl.ok:
                 return new Status(this.ok);
             default:
                 return new Status(retry);
@@ -87,16 +96,16 @@ super.stateChange(stage);
     public Status activation(UserVo userVo){
         final int stage = 2;
 
-super.stateChange(stage);
+        super.stateChange(stage);
 
-        Status status = ActivationService.activate(userVo, token);
+        Status status = activationService.activate(userVo, token);
 
         switch (status.getStatus()){
-            case ActivationService.accessDenied:
+            case ActivationServiceImpl.accessDenied:
                 throw new IllegalAccessError("UserManagementFunctionality : access denied doing ActivationService.activate");
-            case ActivationService.notFound:
+            case ActivationServiceImpl.notFound:
                 return new Status(this.notFound);
-            case ActivationService.ok:
+            case ActivationServiceImpl.ok:
                 return new Status(this.ok);
             default:
                 return new Status(retry);
@@ -108,16 +117,16 @@ super.stateChange(stage);
     public Status deactivation(UserVo userVo){
         final int stage = 3;
 
-super.stateChange(stage);
+        super.stateChange(stage);
 
-        Status status = ActivationService.deactivate(userVo, token);
+        Status status = activationService.deactivate(userVo, token);
 
         switch (status.getStatus()){
-            case ActivationService.accessDenied:
+            case ActivationServiceImpl.accessDenied:
                 throw new IllegalAccessError("UserManagementFunctionality : access denied doing ActivationService.deactivate");
-            case ActivationService.notFound:
+            case ActivationServiceImpl.notFound:
                 return new Status(this.notFound);
-            case ActivationService.ok:
+            case ActivationServiceImpl.ok:
                 return new Status(this.ok);
             default:
                 return new Status(retry);

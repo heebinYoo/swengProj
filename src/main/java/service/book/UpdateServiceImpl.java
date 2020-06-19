@@ -1,24 +1,29 @@
 package service.book;
 
-import database.dao.BookDAO;
+import application.serviceInterface.book.UpdateService;
+
 import database.vo.BookVo;
+import service.BookDAO;
 import service.response.Status;
 import service.response.Token;
 
 import java.sql.SQLException;
 
-public class DeleteService {
-    public static final String ok = "ok";
-    public static final String unknown = "please retry";
-    public static final String accessDenied = "you should delete your book or manager";
+public class UpdateServiceImpl implements UpdateService {
 
 
+    private BookDAO bookDAO;
+    public UpdateServiceImpl(BookDAO bookDAO){
+        this.bookDAO=bookDAO;
+    }
 
-    public static Status delete(BookVo bookVo, Token token){
+
+    public Status update(BookVo bookVo, Token token){
         if(token.getData().getId() == bookVo.getUid() || token.getStatus().equals(Token.manager)) {
             boolean resultIsGood = false;
             try {
-                resultIsGood = BookDAO.delete(bookVo, token.getConn());
+                resultIsGood = bookDAO.update(bookVo, token.getConn());
+
             } catch (SQLException throwables) {
                 return new Status(throwables.toString());
             }
